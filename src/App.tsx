@@ -1,26 +1,35 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { AuthProvider } from './components/auth/AuthContext';
+import ErrorPage from './components/pages/errors/not-found/ErrorPage';
+import PageStatics from './components/pages/PageStatics';
+import AppRouter from './routes';
+import MainMenu from './components/organisms/siderbar/MainMenu';
 
-function App() {
+const App: React.FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          <Route path="*" element={<ErrorPage />} />
+          <Route path="/" element={<PageStatics />} />
+          <Route element={<MainMenu />}>
+            {AppRouter.map((route, index) => (
+              <Route key={index} path={route.path} element={route.element}>
+                {route.children?.map((childRoute, childIndex) => (
+                  <Route
+                    key={childIndex}
+                    path={childRoute.path}
+                    element={childRoute.element}
+                  />
+                ))}
+              </Route>
+            ))}
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
